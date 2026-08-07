@@ -25,7 +25,6 @@
 - [Screenshots / Demo](#-screenshots--demo)
 - [Project Structure](#-project-structure)
 - [Contributing](#-contributing)
-- [License](#-license)
 
 ---
 
