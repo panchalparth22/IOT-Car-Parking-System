@@ -8,7 +8,6 @@
 [![WebSocket](https://img.shields.io/badge/WebSocket-Live-ff69b4)](https://developer.mozilla.org/en-US/docs/Web/API/WebSocket)
 [![Python](https://img.shields.io/badge/Circuit_Visualizer-Python_3-3776AB?logo=python&logoColor=white)](https://python.org)
 [![JWT](https://img.shields.io/badge/Authentication-JWT-000000?logo=jsonwebtokens&logoColor=white)](https://jwt.io)
-[![License](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
 > **A university project that simulates a complete IoT-based car parking management system** — featuring a **3D interactive simulation**, a **web booking portal**, and a **realistic Python hardware circuit visualizer** — all connected to a live backend with MongoDB persistence.
 
@@ -458,12 +457,6 @@ This is a university project, but contributions and suggestions are welcome!
 3. Commit your changes (`git commit -m 'Add amazing feature'`)
 4. Push to the branch (`git push origin feature/amazing-feature`)
 5. Open a Pull Request
-
----
-
-## 📄 License
-
-This project is licensed under the MIT License — see the [LICENSE](LICENSE) file for details.
 
 ---
 
