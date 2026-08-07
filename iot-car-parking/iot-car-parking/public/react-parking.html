@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1.0" />
+<title>IoT Car Parking — 3D Simulation</title>
+
+<!-- React (UMD globals) -->
+<script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+<script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+
+<!-- Three.js import map -->
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+    "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+  }
+}
+</script>
+
+<link rel="stylesheet" href="css/parking-sim.css">
+</head>
+<body>
+
+<div id="loading">
+  <div class="sp"></div>
+  <span>Loading 3D engine...</span>
+</div>
+
+<div id="root"></div>
+
+<script type="module" src="js/parking/app.js"></script>
+</body>
+</html>

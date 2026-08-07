@@ -1,0 +1,695 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>IoT Parking — MyPortal</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background: #0d1117;
+      color: #c9d1d9;
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      min-height: 100vh;
+    }
+    a { color: #58a6ff; text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    /* ── AUTH WRAPPER ── */
+    .awrap {
+      max-width: 420px; margin: 60px auto; padding: 32px;
+      background: #161b22; border: 1px solid #30363d; border-radius: 12px;
+    }
+    .awrap h1 { font-size: 24px; color: #f0f6fc; text-align: center; margin-bottom: 24px; }
+    .awrap h1 span { color: #58a6ff; }
+    .atabs { display: flex; gap: 0; margin-bottom: 20px; border-bottom: 1px solid #30363d; }
+    .atab {
+      flex: 1; padding: 10px; text-align: center; cursor: pointer;
+      color: #8b949e; font-size: 14px; font-weight: 600; border-bottom: 2px solid transparent;
+      transition: all .15s;
+    }
+    .atab:hover { color: #c9d1d9; }
+    .atab.sel { color: #58a6ff; border-bottom-color: #58a6ff; }
+
+    .form-g { margin-bottom: 14px; }
+    .form-g label { display: block; font-size: 12px; color: #8b949e; margin-bottom: 4px; }
+    .form-g input, .form-g select {
+      width: 100%; padding: 9px 11px; background: #0d1117; border: 1px solid #30363d;
+      border-radius: 6px; color: #c9d1d9; font-size: 14px;
+    }
+    .form-g input:focus, .form-g select:focus { outline: none; border-color: #58a6ff; }
+
+    .btn {
+      display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+      padding: 10px 18px; border: none; border-radius: 6px; font-size: 14px; font-weight: 600;
+      cursor: pointer; transition: opacity .15s;
+    }
+    .btn:disabled { opacity: .4; cursor: not-allowed; }
+    .btn-block { width: 100%; }
+    .btn-p { background: #238636; color: #fff; }
+    .btn-p:hover:not(:disabled) { background: #2ea043; }
+    .btn-d { background: #da3633; color: #fff; }
+    .btn-d:hover:not(:disabled) { background: #f85149; }
+    .btn-s { background: #21262d; color: #c9d1d9; border: 1px solid #30363d; }
+    .btn-s:hover:not(:disabled) { background: #30363d; }
+    .btn-o { background: #9e6a03; color: #fff; }
+    .btn-o:hover:not(:disabled) { background: #d29922; }
+
+    .msg {
+      padding: 10px 14px; border-radius: 6px; margin-bottom: 14px; font-size: 13px; display: none;
+    }
+    .msg.show { display: block; }
+    .msg.ok { background: #1b3a1b; border: 1px solid #2ea043; color: #7ee787; }
+    .msg.er { background: #3a1b1b; border: 1px solid #f85149; color: #f85149; }
+    .msg.wa { background: #3a2f1b; border: 1px solid #d29922; color: #d29922; }
+
+    .alink { text-align: center; margin-top: 12px; font-size: 13px; color: #8b949e; }
+    .alink a { cursor: pointer; }
+
+    /* ── DASHBOARD ── */
+    .dwrap { max-width: 1000px; margin: 0 auto; padding: 20px; }
+    .dhead {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 14px 0; border-bottom: 1px solid #30363d; margin-bottom: 20px;
+    }
+    .dhead h1 { font-size: 20px; color: #f0f6fc; }
+    .dhead h1 span { color: #58a6ff; }
+    .dhead .usr { font-size: 13px; color: #8b949e; }
+    .dhead .usr b { color: #c9d1d9; }
+
+    /* Tabs */
+    .tabs {
+      display: flex; gap: 4px; margin-bottom: 20px; flex-wrap: wrap;
+    }
+    .tab {
+      padding: 8px 16px; cursor: pointer; border-radius: 6px;
+      font-size: 13px; font-weight: 600; color: #8b949e; transition: all .15s;
+    }
+    .tab:hover { color: #c9d1d9; background: #161b22; }
+    .tab.sel { color: #f0f6fc; background: #1f2937; }
+
+    .panel { display: none; }
+    .panel.sel { display: block; }
+
+    /* Cards */
+    .card {
+      background: #161b22; border: 1px solid #30363d; border-radius: 10px; padding: 20px; margin-bottom: 16px;
+    }
+    .card h3 { font-size: 15px; color: #f0f6fc; margin-bottom: 14px; }
+
+    /* Slot grid inline */
+    .sg {
+      display: grid; grid-template-columns: repeat(6,1fr); gap: 10px; margin-bottom: 16px;
+    }
+    .sc {
+      background: #0d1117; border: 2px solid #30363d; border-radius: 8px;
+      padding: 12px 6px; text-align: center; cursor: pointer; transition: all .15s;
+    }
+    .sc:hover { border-color: #58a6ff; }
+    .sc.sel { border-color: #58a6ff; box-shadow: 0 0 10px rgba(88,166,255,.25); }
+    .sc .sn { font-size: 17px; font-weight: 700; color: #f0f6fc; }
+    .sc .dot {
+      display: inline-block; width: 12px; height: 12px; border-radius: 50%; margin: 4px 0;
+    }
+    .sc .dot.f { background: #2ea043; box-shadow: 0 0 6px rgba(46,160,67,.4); }
+    .sc .dot.o { background: #f85149; box-shadow: 0 0 6px rgba(248,81,73,.4); }
+    .sc .dot.b { background: #d29922; box-shadow: 0 0 6px rgba(210,153,34,.4); }
+    .sc .sl { font-size: 10px; color: #8b949e; }
+
+    /* Tables */
+    table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    th, td { padding: 10px 12px; text-align: left; border-bottom: 1px solid #21262d; }
+    th { color: #8b949e; font-weight: 600; font-size: 11px; text-transform: uppercase; }
+    td { color: #c9d1d9; }
+
+    .tag {
+      font-size: 11px; padding: 2px 8px; border-radius: 10px; font-weight: 600; display: inline-block;
+    }
+    .tag.cf { background: #1b3a1b; color: #7ee787; }
+    .tag.ar { background: #3a2f1b; color: #d29922; }
+    .tag.cp { background: #1b2a3a; color: #58a6ff; }
+    .tag.cn { background: #3a1b1b; color: #f85149; }
+    .tag.act { background: #1b3a1b; color: #7ee787; }
+    .tag.done { background: #1b2a3a; color: #58a6ff; }
+
+    .empty { text-align: center; color: #484f58; padding: 30px; font-size: 13px; }
+    .row { display: flex; gap: 12px; align-items: end; }
+    .row > * { flex: 1; }
+    .row .btn { flex: 0 0 auto; }
+
+    .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .info-item label { display: block; font-size: 11px; color: #8b949e; text-transform: uppercase; }
+    .info-item .val { font-size: 14px; color: #f0f6fc; margin-top: 2px; }
+
+    .logout-btn {
+      padding: 6px 14px; border: 1px solid #30363d; border-radius: 6px;
+      background: transparent; color: #f85149; font-size: 12px; font-weight: 600;
+      cursor: pointer; transition: all .15s;
+    }
+    .logout-btn:hover { background: rgba(248,81,73,.1); border-color: #f85149; }
+
+    @media (max-width: 700px) {
+      .sg { grid-template-columns: repeat(3,1fr); }
+      .info-grid { grid-template-columns: 1fr; }
+      .row { flex-direction: column; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ========== AUTH ========== -->
+<div id="auth-view" class="awrap">
+  <h1>🅿️ <span>My</span>Parking</h1>
+  <div class="atabs">
+    <div class="atab sel" data-tab="login" onclick="switchAuth('login')">Sign In</div>
+    <div class="atab" data-tab="signup" onclick="switchAuth('signup')">Sign Up</div>
+  </div>
+  <div id="auth-msg" class="msg"></div>
+
+  <!-- Login -->
+  <div id="auth-login">
+    <div class="form-g"><label>Email</label><input type="email" id="l-email" placeholder="demo@parking.com"></div>
+    <div class="form-g"><label>Password</label><input type="password" id="l-pass" placeholder="••••••••"></div>
+    <button class="btn btn-p btn-block" onclick="doLogin()">Sign In</button>
+    <div class="alink">Demo: <a onclick="fillDemo()">demo@parking.com / demo123</a></div>
+  </div>
+
+  <!-- Signup -->
+  <div id="auth-signup" style="display:none">
+    <div class="form-g"><label>Full Name</label><input type="text" id="s-name" placeholder="John Doe"></div>
+    <div class="form-g"><label>Email</label><input type="email" id="s-email" placeholder="you@email.com"></div>
+    <div class="form-g"><label>Phone</label><input type="text" id="s-phone" placeholder="9876543210"></div>
+    <div class="form-g"><label>Password</label><input type="password" id="s-pass" placeholder="Min 6 chars"></div>
+    <button class="btn btn-p btn-block" onclick="doSignup()">Create Account</button>
+  </div>
+</div>
+
+<!-- ========== DASHBOARD ========== -->
+<div id="dash-view" style="display:none">
+  <div class="dwrap">
+    <div class="dhead">
+      <div>
+        <h1>🅿️ <span>My</span>Parking</h1>
+        <div class="usr" id="dash-user">Welcome, <b id="dash-name"></b></div>
+      </div>
+      <button class="logout-btn" onclick="doLogout()">✕ Logout</button>
+    </div>
+
+    <!-- Tabs -->
+    <div class="tabs">
+      <div class="tab sel" data-tab="tab-book" onclick="switchTab('tab-book')">🅿️ Book</div>
+      <div class="tab" data-tab="tab-cars" onclick="switchTab('tab-cars')">🚗 My Cars</div>
+      <div class="tab" data-tab="tab-history" onclick="switchTab('tab-history')">📜 History</div>
+      <div class="tab" data-tab="tab-profile" onclick="switchTab('tab-profile')">👤 Profile</div>
+    </div>
+
+    <!-- Messages -->
+    <div id="dash-msg" class="msg"></div>
+
+    <!-- ════ BOOK TAB ════ -->
+    <div id="tab-book" class="panel sel">
+      <div class="card">
+        <h3>📌 Slot Availability</h3>
+        <div class="sg" id="slot-grid"></div>
+        <div style="display:flex;gap:16px;justify-content:center;margin-bottom:12px;font-size:12px;color:#8b949e">
+          <span>🟢 Free</span> <span>🟠 Booked</span> <span>🔴 Occupied</span>
+        </div>
+      </div>
+      <div class="card">
+        <h3>📋 Pre-book & Pay</h3>
+        <div class="row">
+          <div class="form-g"><label>Slot #</label><input type="number" id="b-slot" min="1" max="12" placeholder="1-12"></div>
+          <div class="form-g"><label>Car</label>
+            <select id="b-car"><option value="">— Select saved car —</option></select>
+          </div>
+        </div>
+        <div class="row">
+          <div class="form-g"><label>Or enter registration</label><input type="text" id="b-reg" placeholder="MH-12-AB-1234" maxlength="20"></div>
+          <div class="form-g"><label>Model</label><input type="text" id="b-model" placeholder="Toyota Camry" maxlength="40"></div>
+        </div>
+        <div class="row">
+          <div class="form-g"><label>Arrival in</label>
+            <select id="b-delay">
+              <option value="5">5 sec</option><option value="10" selected>10 sec</option>
+              <option value="20">20 sec</option><option value="30">30 sec</option><option value="60">60 sec</option>
+            </select>
+          </div>
+          <div class="form-g"><label style="color:#d29922">Fee</label>
+            <div style="padding:9px 11px;background:#0d1117;border:1px solid #30363d;border-radius:6px;font-weight:700;color:#ffd700">£7</div>
+          </div>
+        </div>
+        <button class="btn btn-o btn-block" onclick="doBooking()">📌 Pay £7 & Book</button>
+      </div>
+    </div>
+
+    <!-- ════ CARS TAB ════ -->
+    <div id="tab-cars" class="panel">
+      <div class="card">
+        <h3>🚗 Saved Cars</h3>
+        <div id="cars-list"><div class="empty">No cars saved yet</div></div>
+      </div>
+      <div class="card">
+        <h3>➕ Add Car</h3>
+        <div class="row">
+          <div class="form-g"><label>Registration #</label><input type="text" id="c-reg" placeholder="MH-12-AB-1234" maxlength="20"></div>
+          <div class="form-g"><label>Model</label><input type="text" id="c-model" placeholder="Toyota Camry" maxlength="40"></div>
+          <div class="form-g"><label>Color</label><input type="text" id="c-color" placeholder="Blue" maxlength="20"></div>
+        </div>
+        <button class="btn btn-p" onclick="addCar()">➕ Save Car</button>
+      </div>
+    </div>
+
+    <!-- ════ HISTORY TAB ════ -->
+    <div id="tab-history" class="panel">
+      <div class="card">
+        <h3>📜 Pre-bookings</h3>
+        <div id="bk-history"><div class="empty">No booking history</div></div>
+      </div>
+      <div class="card">
+        <h3>🅿️ Parking Sessions</h3>
+        <div id="pk-history"><div class="empty">No parking history</div></div>
+      </div>
+    </div>
+
+    <!-- ════ PROFILE TAB ════ -->
+    <div id="tab-profile" class="panel">
+      <div class="card">
+        <h3>👤 My Profile</h3>
+        <div class="info-grid">
+          <div class="info-item"><label>Name</label><div class="val" id="p-name">—</div></div>
+          <div class="info-item"><label>Email</label><div class="val" id="p-email">—</div></div>
+          <div class="info-item"><label>Phone</label><div class="val" id="p-phone">—</div></div>
+          <div class="info-item"><label>Wallet</label><div class="val" style="color:#ffd700" id="p-wallet">—</div></div>
+          <div class="info-item" style="grid-column:1/-1"><label>Address</label><div class="val" id="p-address">—</div></div>
+        </div>
+      </div>
+      <div class="card">
+        <h3>✏️ Edit Profile</h3>
+        <div class="row">
+          <div class="form-g"><label>Name</label><input type="text" id="e-name"></div>
+          <div class="form-g"><label>Phone</label><input type="text" id="e-phone"></div>
+        </div>
+        <div class="form-g"><label>Address</label><input type="text" id="e-address"></div>
+        <button class="btn btn-p" onclick="updateProfile()">💾 Save</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ─── CONFIG ─── */
+const API = '/api';
+let TOKEN = localStorage.getItem('ptoken') || null;
+let user = null;
+let slots = [];
+let cars = [];
+let bookings = [];
+let bkHistory = [];
+let pkHistory = [];
+let selectedSlot = null;
+
+/* ─── AUTH SWITCH ─── */
+function switchAuth(tab) {
+  document.querySelectorAll('.atab').forEach(t => t.classList.toggle('sel', t.dataset.tab === tab));
+  document.getElementById('auth-login').style.display = tab === 'login' ? '' : 'none';
+  document.getElementById('auth-signup').style.display = tab === 'signup' ? '' : 'none';
+}
+function authMsg(text, type) {
+  const el = document.getElementById('auth-msg');
+  el.textContent = text;
+  el.className = 'msg show ' + type;
+}
+function fillDemo() {
+  document.getElementById('l-email').value = 'demo@parking.com';
+  document.getElementById('l-pass').value = 'demo123';
+  doLogin();
+}
+
+/* ─── LOGIN ─── */
+async function doLogin() {
+  const email = document.getElementById('l-email').value.trim();
+  const password = document.getElementById('l-pass').value;
+  if (!email || !password) { authMsg('Enter email and password', 'er'); return; }
+
+  try {
+    const r = await fetch(API + '/auth/login', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password }),
+    });
+    const d = await r.json();
+    if (d.token) {
+      TOKEN = d.token;
+      localStorage.setItem('ptoken', TOKEN);
+      user = d.user;
+      enterDash();
+    } else {
+      authMsg(d.error || 'Login failed', 'er');
+    }
+  } catch (e) { authMsg('Network error', 'er'); }
+}
+
+/* ─── SIGNUP ─── */
+async function doSignup() {
+  const name = document.getElementById('s-name').value.trim();
+  const email = document.getElementById('s-email').value.trim();
+  const phone = document.getElementById('s-phone').value.trim();
+  const password = document.getElementById('s-pass').value;
+  if (!name || !email || !password) { authMsg('Fill all required fields', 'er'); return; }
+
+  try {
+    const r = await fetch(API + '/auth/signup', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name, email, phone, password }),
+    });
+    const d = await r.json();
+    if (d.token) {
+      TOKEN = d.token;
+      localStorage.setItem('ptoken', TOKEN);
+      user = d.user;
+      enterDash();
+    } else {
+      authMsg(d.error || 'Signup failed', 'er');
+    }
+  } catch (e) { authMsg('Network error', 'er'); }
+}
+
+/* ─── LOGOUT ─── */
+function doLogout() {
+  TOKEN = null;
+  localStorage.removeItem('ptoken');
+  user = null;
+  document.getElementById('dash-view').style.display = 'none';
+  document.getElementById('auth-view').style.display = '';
+  document.getElementById('l-email').value = '';
+  document.getElementById('l-pass').value = '';
+}
+
+/* ─── ENTER DASHBOARD ─── */
+function enterDash() {
+  document.getElementById('auth-view').style.display = 'none';
+  document.getElementById('dash-view').style.display = '';
+  document.getElementById('dash-name').textContent = user?.name || 'User';
+  loadAll();
+}
+
+/* ─── SWITCH TAB ─── */
+function switchTab(tab) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.toggle('sel', t.dataset.tab === tab));
+  document.querySelectorAll('.panel').forEach(p => p.classList.toggle('sel', p.id === tab));
+}
+
+function dashMsg(text, type) {
+  const el = document.getElementById('dash-msg');
+  el.textContent = text;
+  el.className = 'msg show ' + type;
+  setTimeout(() => { if (el.textContent === text) el.className = 'msg'; }, 4000);
+}
+
+/* ─── API HELPERS ─── */
+async function apiFetch(url, opts = {}) {
+  const h = { 'Content-Type': 'application/json' };
+  if (TOKEN) h['Authorization'] = 'Bearer ' + TOKEN;
+  const r = await fetch(url, { ...opts, headers: { ...h, ...(opts.headers || {}) } });
+  try { return await r.json(); } catch { return null; }
+}
+
+/* ─── LOAD ALL ─── */
+async function loadAll() {
+  await Promise.all([loadSlots(), loadCars(), loadBookings(), loadProfile(), loadHistory()]);
+}
+
+async function loadSlots() {
+  try {
+    const d = await apiFetch(API + '/parking/slots');
+    if (d && d.slots) {
+      slots = d.slots;
+      renderSlotGrid();
+      updateSlotDropdowns();
+    }
+  } catch (e) {}
+}
+
+async function loadCars() {
+  if (!TOKEN) return;
+  try {
+    const d = await apiFetch(API + '/users/cars');
+    if (Array.isArray(d)) cars = d;
+    else if (d && Array.isArray(d.cars)) cars = d.cars;
+    else cars = [];
+    renderCars();
+    populateCarSelect();
+  } catch (e) { cars = []; }
+}
+
+async function loadBookings() {
+  try {
+    const d = await apiFetch(API + '/bookings/my');
+    if (d && d.bookings) {
+      bookings = d.bookings;
+      renderSlotGrid();
+    }
+  } catch (e) {}
+}
+
+async function loadProfile() {
+  if (!TOKEN) return;
+  try {
+    const d = await apiFetch(API + '/users/profile');
+    if (d && d.name) {
+      user = d;
+      document.getElementById('dash-name').textContent = d.name;
+      document.getElementById('p-name').textContent = d.name || '—';
+      document.getElementById('p-email').textContent = d.email || '—';
+      document.getElementById('p-phone').textContent = d.phone || '—';
+      document.getElementById('p-wallet').textContent = '£' + (d.wallet_balance || 0).toFixed(2);
+      document.getElementById('p-address').textContent = d.address || '—';
+      document.getElementById('e-name').value = d.name || '';
+      document.getElementById('e-phone').value = d.phone || '';
+      document.getElementById('e-address').value = d.address || '';
+    }
+  } catch (e) {}
+}
+
+async function loadHistory() {
+  if (!TOKEN) return;
+  try {
+    // Booking history
+    const db = await apiFetch(API + '/bookings/all');
+    if (db && db.bookings) {
+      bkHistory = db.bookings.filter(b => String(b.user_id) === String(user?._id || user?.id));
+      renderBkHistory();
+    }
+    // Parking session history
+    const dp = await apiFetch(API + '/users/history');
+    if (Array.isArray(dp)) {
+      pkHistory = dp;
+      renderPkHistory();
+    }
+  } catch (e) {}
+}
+
+/* ─── SLOT GRID ─── */
+function renderSlotGrid() {
+  const grid = document.getElementById('slot-grid');
+  grid.innerHTML = '';
+  for (const s of slots) {
+    const st = s.status || 'empty';
+    const isBookedByMe = st === 'booked' && bookings.some(b => b.slot_number === s.slot_number && b.status !== 'completed' && b.status !== 'cancelled');
+    const dotClass = st === 'empty' ? 'f' : st === 'booked' ? 'b' : 'o';
+    const label = st === 'empty' ? 'Free' : isBookedByMe ? 'Your Book' : st === 'booked' ? 'Booked' : 'Occupied';
+    const card = document.createElement('div');
+    card.className = 'sc' + (selectedSlot === s.slot_number ? ' sel' : '');
+    card.innerHTML = `<div class="sn">#${s.slot_number}</div><div class="dot ${dotClass}"></div><div class="sl">${label}</div>`;
+    card.onclick = () => {
+      if (st === 'empty') {
+        selectedSlot = s.slot_number;
+        document.getElementById('b-slot').value = s.slot_number;
+        renderSlotGrid();
+      }
+    };
+    grid.appendChild(card);
+  }
+}
+
+function updateSlotDropdowns() {
+  const free = slots.filter(s => s.status === 'empty').length;
+  const booked = slots.filter(s => s.status === 'booked').length;
+  const occ = slots.filter(s => s.status === 'occupied').length;
+}
+
+/* ─── CARS ─── */
+function renderCars() {
+  const el = document.getElementById('cars-list');
+  if (!cars.length) { el.innerHTML = '<div class="empty">No cars saved yet</div>'; return; }
+  el.innerHTML = '<table><tr><th>Registration</th><th>Model</th><th>Color</th><th></th></tr>' +
+    cars.map(c => `<tr>
+      <td>${c.registration_number || ''}</td>
+      <td>${c.model || ''}</td>
+      <td>${c.color || ''}</td>
+      <td><button class="btn btn-d" style="padding:4px 10px;font-size:11px" onclick="deleteCar('${c._id}')">✕</button></td>
+    </tr>`).join('') + '</table>';
+}
+
+function populateCarSelect() {
+  const sel = document.getElementById('b-car');
+  sel.innerHTML = '<option value="">— Select saved car —</option>' +
+    cars.map(c => `<option value="${c.registration_number}|${c.model}">${c.registration_number} · ${c.model}</option>`).join('');
+}
+
+async function addCar() {
+  const reg = document.getElementById('c-reg').value.trim().toUpperCase();
+  const model = document.getElementById('c-model').value.trim();
+  const color = document.getElementById('c-color').value.trim();
+  if (!reg) { dashMsg('Enter registration number', 'er'); return; }
+
+  const d = await apiFetch(API + '/users/cars', {
+    method: 'POST', body: JSON.stringify({ registration_number: reg, model, color }),
+  });
+  if (d && d._id) {
+    dashMsg('✅ Car saved: ' + reg, 'ok');
+    document.getElementById('c-reg').value = '';
+    document.getElementById('c-model').value = '';
+    document.getElementById('c-color').value = '';
+    await loadCars();
+  } else {
+    dashMsg(d?.error || 'Failed to save car', 'er');
+  }
+}
+
+async function deleteCar(id) {
+  if (!confirm('Remove this car?')) return;
+  const d = await apiFetch(API + '/users/cars/' + id, { method: 'DELETE' });
+  if (d) { dashMsg('✅ Car removed', 'ok'); await loadCars(); }
+}
+
+/* ─── BOOKING ─── */
+async function doBooking() {
+  let slot = parseInt(document.getElementById('b-slot').value);
+  const carVal = document.getElementById('b-car').value;
+  let reg = document.getElementById('b-reg').value.trim();
+  let model = document.getElementById('b-model').value.trim();
+  const delay = parseInt(document.getElementById('b-delay').value);
+
+  if (!slot || slot < 1 || slot > 12) { dashMsg('Select a slot', 'er'); return; }
+
+  // Check slot is free
+  const slotData = slots.find(s => s.slot_number === slot);
+  if (!slotData || slotData.status !== 'empty') {
+    dashMsg(`Slot #${slot} is not available`, 'er'); return;
+  }
+
+  // Use saved car or manual entry
+  if (carVal) {
+    const parts = carVal.split('|');
+    reg = parts[0];
+    if (!model) model = parts[1] || '';
+  }
+  if (!reg) { dashMsg('Enter a car registration or select a saved car', 'er'); return; }
+
+  dashMsg('⏳ Processing payment & booking...', 'wa');
+  const d = await apiFetch(API + '/bookings', {
+    method: 'POST',
+    body: JSON.stringify({
+      slot_number: slot,
+      car_registration: reg,
+      car_model: model || undefined,
+      arrival_delay_seconds: delay,
+    }),
+  });
+
+  if (d && d.success) {
+    dashMsg(d.message, 'ok');
+    document.getElementById('b-slot').value = '';
+    document.getElementById('b-reg').value = '';
+    document.getElementById('b-model').value = '';
+    selectedSlot = null;
+    await loadAll();
+  } else {
+    dashMsg(d?.error || 'Booking failed', 'er');
+  }
+}
+
+/* ─── HISTORY ─── */
+function statusTag(s) {
+  const map = {
+    'confirmed': '<span class="tag cf">Confirmed</span>',
+    'arriving': '<span class="tag ar">Arriving</span>',
+    'completed': '<span class="tag cp">Completed</span>',
+    'cancelled': '<span class="tag cn">Cancelled</span>',
+    'active': '<span class="tag act">Active</span>',
+  };
+  return map[s] || s;
+}
+
+function renderBkHistory() {
+  const el = document.getElementById('bk-history');
+  if (!bkHistory.length) { el.innerHTML = '<div class="empty">No pre-booking history</div>'; return; }
+  el.innerHTML = '<table><tr><th>Ref</th><th>Slot</th><th>Car</th><th>Paid</th><th>Status</th><th>Date</th></tr>' +
+    bkHistory.map(b => `<tr>
+      <td style="font-size:11px;color:#8b949e">${b.booking_reference || '—'}</td>
+      <td><b>#${b.slot_number}</b></td>
+      <td>${b.car_registration || ''}</td>
+      <td style="color:#ffd700">£${b.amount_paid || 0}</td>
+      <td>${statusTag(b.status)}</td>
+      <td style="font-size:11px;color:#8b949e">${b.created_at ? new Date(b.created_at).toLocaleString() : '—'}</td>
+    </tr>`).join('') + '</table>';
+}
+
+function renderPkHistory() {
+  const el = document.getElementById('pk-history');
+  if (!pkHistory.length) { el.innerHTML = '<div class="empty">No parking sessions</div>'; return; }
+  el.innerHTML = '<table><tr><th>Slot</th><th>Registration</th><th>In</th><th>Out</th><th>Fee</th><th>Status</th></tr>' +
+    pkHistory.map(s => `<tr>
+      <td><b>#${s.slot_number}</b></td>
+      <td>${s.car_registration || ''}</td>
+      <td style="font-size:11px;color:#8b949e">${s.entry_time ? new Date(s.entry_time).toLocaleString() : '—'}</td>
+      <td style="font-size:11px;color:#8b949e">${s.exit_time ? new Date(s.exit_time).toLocaleString() : '—'}</td>
+      <td style="color:#ffd700">£${s.amount_charged || 0}</td>
+      <td>${statusTag(s.status)}</td>
+    </tr>`).join('') + '</table>';
+}
+
+/* ─── PROFILE ─── */
+async function updateProfile() {
+  const name = document.getElementById('e-name').value.trim();
+  const phone = document.getElementById('e-phone').value.trim();
+  const address = document.getElementById('e-address').value.trim();
+  if (!name) { dashMsg('Name is required', 'er'); return; }
+
+  const d = await apiFetch(API + '/users/profile', {
+    method: 'PUT', body: JSON.stringify({ name, phone, address }),
+  });
+  if (d && d.name) {
+    dashMsg('✅ Profile updated', 'ok');
+    await loadProfile();
+  } else {
+    dashMsg('Failed to update profile', 'er');
+  }
+}
+
+/* ─── INIT ─── */
+(async () => {
+  if (TOKEN) {
+    // Verify token is still valid
+    const d = await apiFetch(API + '/auth/me');
+    if (d && d.email) {
+      user = d;
+      enterDash();
+      return;
+    }
+    // Token expired
+    localStorage.removeItem('ptoken');
+    TOKEN = null;
+  }
+  document.getElementById('auth-view').style.display = '';
+})();
+
+// Auto-refresh slots every 5s when dashboard is visible
+setInterval(() => {
+  if (document.getElementById('dash-view').style.display !== 'none') {
+    loadSlots();
+  }
+}, 5000);
+</script>
+</body>
+</html>

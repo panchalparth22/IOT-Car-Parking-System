@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>IoT Car Parking System</title>
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    .hero {
+      text-align: center;
+      padding: 60px 24px;
+      background: linear-gradient(135deg, #1a73e8 0%, #0d47a1 100%);
+      color: white;
+      border-radius: 16px;
+      margin-bottom: 40px;
+    }
+
+    .hero .icon { font-size: 72px; margin-bottom: 16px; }
+    .hero h1 { font-size: 42px; margin-bottom: 12px; }
+    .hero p { font-size: 18px; opacity: 0.9; max-width: 600px; margin: 0 auto 32px; }
+
+    .hero-buttons { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; }
+
+    .hero-buttons .btn {
+      padding: 16px 32px;
+      font-size: 16px;
+      border-radius: 12px;
+    }
+
+    .hero-buttons .btn-white {
+      background: white;
+      color: #1a73e8;
+    }
+    .hero-buttons .btn-white:hover {
+      background: #f0f0f0;
+    }
+
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 24px;
+      margin: 40px 0;
+    }
+
+    .feature-card {
+      background: white;
+      border-radius: 16px;
+      padding: 32px 24px;
+      text-align: center;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .feature-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+    }
+
+    .feature-card .f-icon { font-size: 48px; margin-bottom: 16px; }
+    .feature-card h3 { font-size: 20px; margin-bottom: 8px; color: var(--gray-900); }
+    .feature-card p { font-size: 14px; color: var(--gray-600); line-height: 1.6; }
+
+    .tech-stack {
+      text-align: center;
+      padding: 40px 0;
+    }
+
+    .tech-stack h2 { font-size: 28px; margin-bottom: 24px; }
+    .tech-badges { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+    .tech-badge {
+      background: var(--gray-100);
+      padding: 10px 20px;
+      border-radius: 30px;
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--gray-700);
+    }
+
+    .quick-links {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
+      margin: 32px 0;
+    }
+
+    .quick-link {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 20px;
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+      transition: all 0.2s;
+      text-decoration: none;
+      color: var(--gray-900);
+    }
+
+    .quick-link:hover {
+      transform: translateX(4px);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+      text-decoration: none;
+    }
+
+    .quick-link .ql-icon { font-size: 32px; }
+    .quick-link .ql-text { font-weight: 600; font-size: 15px; }
+    .quick-link .ql-desc { font-size: 12px; color: var(--gray-500); }
+
+    footer {
+      text-align: center;
+      padding: 32px;
+      color: var(--gray-500);
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+  <nav class="navbar">
+    <div class="navbar-brand">
+      <span>🚗</span>
+      IoT Car Parking System
+    </div>
+    <div class="navbar-links">
+      <a href="react-parking.html">🚗 3D Simulation</a>
+      <a href="booking-portal.html">🅿️ Booking Portal</a>
+    </div>
+  </nav>
+
+  <div class="container">
+    <!-- Hero -->
+    <div class="hero">
+      <div class="icon">🏗️</div>
+      <h1>IoT Car Parking System</h1>
+      <p>An intelligent parking management system with automated slot allocation, real-time hardware simulation, and web-based user management.</p>
+      <div class="hero-buttons">
+        <a href="react-parking.html" class="btn btn-white">🚗 Open 3D Simulation</a>
+        <a href="booking-portal.html" class="btn btn-warning">🅿️ Booking Portal</a>
+      </div>
+    </div>
+
+    <!-- Features -->
+    <h2 style="text-align:center;font-size:28px;margin-bottom:8px;">✨ Key Features</h2>
+    <p style="text-align:center;color:var(--gray-500);margin-bottom:24px;">Everything you need for a smart parking experience</p>
+
+    <div class="features-grid">
+      <div class="feature-card">
+        <div class="f-icon">🅿️</div>
+        <h3>12-Slot Smart Parking</h3>
+        <p>Automated slot allocation assigns the nearest available spot when a car arrives. Real-time status tracking for all 12 slots.</p>
+      </div>
+      <div class="feature-card">
+        <div class="f-icon">🔧</div>
+        <h3>3D Simulation</h3>
+        <p>Fully interactive 3D simulation with cars, gates, sensors and automatic pre-booked car arrivals.</p>
+      </div>
+      <div class="feature-card">
+        <div class="f-icon">💰</div>
+        <h3>Automated Billing</h3>
+        <p>Flat-rate pricing (£5 direct / £7 pre-book) calculated at exit. Charges deducted from registered wallet balance.</p>
+      </div>
+      <div class="feature-card">
+        <div class="f-icon">👤</div>
+        <h3>User Management</h3>
+        <p>Sign up, login, manage multiple cars, add payment methods, and track complete parking history.</p>
+      </div>
+      <div class="feature-card">
+        <div class="f-icon">📊</div>
+        <h3>Real-Time Dashboard</h3>
+        <p>Live parking status, session history, wallet balance, and spending analytics all in one place.</p>
+      </div>
+      <div class="feature-card">
+        <div class="f-icon">⚡</div>
+        <h3>Automated Gates</h3>
+        <p>Entry gate opens automatically when IR sensor detects a car. Exit gate opens only after successful payment.</p>
+      </div>
+    </div>
+
+    <!-- Quick Links -->
+    <h2 style="text-align:center;font-size:24px;margin-bottom:16px;">🚀 Quick Access</h2>
+    <div class="quick-links">
+      <a href="react-parking.html" class="quick-link">
+        <div class="ql-icon">🚗</div>
+        <div>
+          <div class="ql-text">3D Simulation</div>
+          <div class="ql-desc">3D parking lot with booking auto-park</div>
+        </div>
+      </a>
+      <a href="booking-portal.html" class="quick-link">
+        <div class="ql-icon">🅿️</div>
+        <div>
+          <div class="ql-text">Booking Portal</div>
+          <div class="ql-desc">Pre-book slots, manage cars, view history</div>
+        </div>
+      </a>
+    </div>
+
+    <!-- Tech Stack -->
+    <div class="tech-stack">
+      <h2>🛠️ Technology Stack</h2>
+      <div class="tech-badges">
+        <span class="tech-badge">Node.js</span>
+        <span class="tech-badge">Express.js</span>
+        <span class="tech-badge">MongoDB</span>
+        <span class="tech-badge">WebSocket</span>
+        <span class="tech-badge">JWT Auth</span>
+        <span class="tech-badge">HTML/CSS/JS</span>
+        <span class="tech-badge">REST API</span>
+        <span class="tech-badge">Simulated IoT</span>
+      </div>
+    </div>
+
+    <!-- Demo Credentials -->
+    <div class="card" style="max-width:500px;margin:0 auto;">
+      <div class="card-header">
+        <div class="card-title">🔑 Demo Account</div>
+      </div>
+      <table>
+        <tr><td><strong>Email:</strong></td><td>demo@parking.com</td></tr>
+        <tr><td><strong>Password:</strong></td><td>demo123</td></tr>
+        <tr><td><strong>Wallet Balance:</strong></td><td>£100.00</td></tr>
+      </table>
+      <div style="margin-top:12px;text-align:center;">
+        <a href="booking-portal.html" class="btn btn-primary">Open Booking Portal</a>
+      </div>
+    </div>
+
+    <footer>
+      🚗 IoT Car Parking System — University Project — All hardware components simulated online
+    </footer>
+  </div>
+</body>
+</html>
